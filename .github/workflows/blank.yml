@@ -1,28 +1,26 @@
-name: Godot Unit Tests
-
-on: 
-  push:
-  pull_request:
+name: "Godot 4.5 GUT CI"
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Run GUT Tests
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Run GUT Checks
-        uses: Hypasist/godot4-gut-testing@v1.0
         with:
-          # Path to GUT configuration. Example config is pasted below.
-          # Default: '.'
-          gutConfigPath:
-      
-          # Extra flags to pass to both Godot runs. E.g. `--verbose`
-          # Default: ' '
-          extraGodotFlags:
-      
-          # Boolean value; you can disable resource importing, if you include `.godot` folder in your repository.
-          # Default: 'true'
-          importGodotResources:
+          lfs: true
+
+      - name: Setup Godot 4.5
+        uses: lihop/setup-godot@v3
+        with:
+          # Use the stable 4.5.1 release for maximum reliability
+          version: 4.5.1-stable 
+
+      - name: Run GUT Tests
+        shell: bash
+        run: |
+          # Headless mode is mandatory for CI; --quit ensures the runner stops after completion
+          # GODOT_DISABLE_LEAK_CHECKS=1 is often used to avoid false failures from engine-level leak logs
+          export GODOT_DISABLE_LEAK_CHECKS=1
+          godot --headless -s --path "$PWD" addons/gut/gut_cmdln.gd -gexit
+
