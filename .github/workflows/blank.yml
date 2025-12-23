@@ -16,6 +16,9 @@ jobs:
           # Use the stable 4.5.1 release for maximum reliability
           version: 4.5.1-stable 
 
+      - name: Import Assets
+        run: godot --headless --editor --quit
+
       - name: Run GUT Tests
         shell: bash
         run: |
